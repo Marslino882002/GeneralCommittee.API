@@ -1,0 +1,18 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace GeneralCommittee.Domain.Dtos
+{
+    public class CourseViewDto
+    {
+        public string Name { set; get; } = default!;
+        public string? ThumbnailUrl { get; set; }
+        public decimal Price { get; set; }
+        public decimal? Rating { get; set; }
+        public int ReviewsCount { get; set; } = 0;
+        public int EnrollmentsCount { get; set; } = 0;
+    }
+}
