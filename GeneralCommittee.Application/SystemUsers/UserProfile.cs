@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using GeneralCommittee.Application.SystemUsers.Commands.Register;
 using GeneralCommittee.Domain.Entities;
 using System;
 using System.Collections.Generic;

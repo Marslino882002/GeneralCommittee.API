@@ -46,14 +46,14 @@ namespace GeneralCommittee.Application.SystemUsers.Commands.Register
             if (!isInserted)
             {
                 logger.LogInformation("User {@user} already exists", request.UserName);
-                return OperationResult<UserDto>.Failure("User Already Exist", StatusCode.BadRequest);
+                return OperationResult<UserDto>.Failure("User Already Exist", StateCode.BadRequest);
             }
 
             logger.LogError("User {@user} Registered successfully", request.UserName);
             await SendConfirmation(user);
             var userDto = mapper.Map<UserDto>(request);
             logger.LogInformation("User {@user} Registered successfully", request.UserName);
-            return OperationResult<UserDto>.SuccessResult(userDto, "User Created Successfully", StatusCode.Created);
+            return OperationResult<UserDto>.SuccessResult(userDto, "User Created Successfully", StateCode.Created);
         }
 
         private async Task SendConfirmation(User user)

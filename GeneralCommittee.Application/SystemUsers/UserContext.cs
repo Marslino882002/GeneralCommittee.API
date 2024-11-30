@@ -9,14 +9,14 @@ using System.Threading.Tasks;
 
 namespace GeneralCommittee.Application.SystemUsers
 {
-    public interface UserContext
+    public interface IUserContext
     {
         public CurrentUser? GetCurrentUser();
 
     }
-    internal class UserContext(
+    public class UserContext(
     IHttpContextAccessor httpContextAccessor
-) : UserContext
+) : IUserContext
     {
         public CurrentUser? GetCurrentUser()
         {

@@ -15,7 +15,7 @@ namespace GeneralCommittee.Infrastructure.Seeders
     {
         public async Task seed()
         {
-            string connectionString = Environment.GetEnvironmentVariable("MY_CONNECTION_STRING");
+            string connectionString = Environment.GetEnvironmentVariable("DefaultConnection");
             var x = DbContext.Database.GetConnectionString();
             if (!await DbContext.Database.CanConnectAsync())
                 return;

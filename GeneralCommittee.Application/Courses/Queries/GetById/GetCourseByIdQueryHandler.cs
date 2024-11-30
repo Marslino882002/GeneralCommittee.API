@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace GeneralCommittee.Application.Courses.Queries.GetById
 {
     public class GetCourseByIdQueryHandler(
-    ILogger<CreateCourseCommandHandler> logger,
+    ILogger<GetCourseByIdQueryHandler> logger,
     IMapper mapper,
     ICourseRepository courseRepository
 ) : IRequestHandler<GetCourseByIdQuery, CourseDto>

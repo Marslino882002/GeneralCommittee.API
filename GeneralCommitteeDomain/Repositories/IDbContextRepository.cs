@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GeneralCommittee.Domain.Repositories
 {
-    public interface IDbContextRepositor<T> where T : class
+    public interface IDbContextRepository<T> where T : class
     {
 
         Task<T> GetByIdAsync(object id);

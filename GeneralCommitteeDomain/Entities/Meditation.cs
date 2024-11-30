@@ -9,4 +9,5 @@ public class Meditation : MaterialBe
 
     //todo implement it with url to avoid heavy db searches
     public string Content { get; set; } = default!;
+  //  public string? PhotoUrl { get; set; }
 }

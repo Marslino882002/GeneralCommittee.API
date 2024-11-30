@@ -25,4 +25,11 @@
     <ProjectReference Include="..\GeneralCommitteeDomain\GeneralCommittee.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Podcasts\Commands\AddPodcast\" />
+    <Folder Include="Podcasts\Commands\DeletePodcast\" />
+    <Folder Include="Podcasts\Queries\GetAllPodcasts\" />
+    <Folder Include="Podcasts\Queries\GetPodcastById\" />
+  </ItemGroup>
+
 </Project>

@@ -14,55 +14,53 @@ using System.Threading.Tasks;
 namespace GeneralCommittee.Infrastructure.Repositories
 {
     public class MeditationRepository(GeneralCommitteeDbContext dbContext,
-         ILogger<ArticleRepository> logger) : IMeditation
+         ILogger<MeditationRepository> logger) : IMeditationRepository
     {
-        public async Task<int> AddMeditationsync(Meditation meditation)
-        {
-
-
-            try
-            {
-                await dbContext.Meditations.AddAsync(meditation);
+        /// <summary>
+        /// Adds a new meditation and saves it to the database.
+        /// </summary>
+        /// <param name="meditation">The meditation entity to add.</param>
+        /// <returns>The ID of the added meditation.</returns>
+        /// <exception cref="DbUpdateException">Thrown when there is an error updating the database, including foreign key violations.</exception>
+        /// <exception cref="Exception">Thrown when there is a general error.</exception>
+ public async Task<int> AddMeditationAsync(Meditation meditation)
+        {try
+            {await dbContext.Meditations.AddAsync(meditation);
                 await dbContext.SaveChangesAsync();
             }
-
-            catch (DbUpdateException ex)
+            catch (DbUpdateException ex) when (ex.InnerException is SqlException sqlException)
             {
-                if (ex.InnerException is SqlException sqlException)
+                // TODO: Check for specific foreign key constraint violations
+                foreach (SqlError error in sqlException.Errors)
                 {
-                    // Check for specific foreign key constraint violations
-                    foreach (SqlError error in sqlException.Errors)
+                    // TODO: SQL Server foreign key violation error number
+                    if (error.Number == 547) // Foreign key violation error number
                     {
-                        if (error.Number == 547) // SQL Server foreign key violation error number
-                        {
-                            logger.LogError(ex, "Foreign key violation: {Message}", error.Message);
-                            throw new ResourceNotFound(nameof(Author), meditation.MeditationId.ToString());
-                        }
+                        logger.LogError(ex, "Foreign key violation: {Message}", error.Message);
+                        throw new ResourceNotFound(nameof(Meditation), meditation.MeditationId.ToString());
                     }
                 }
-                logger.LogError(ex, "An error occurred while saving the article.");
+
+                // TODO: Log error details for further investigation
+                logger.LogError(ex, "An error occurred while saving the Meditation.");
                 throw;
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "An error occurred while saving the article.");
+                // TODO: Log general exceptions for monitoring and debugging
+                logger.LogError(ex, "An error occurred while saving the Meditation.");
                 throw;
             }
 
             return meditation.MeditationId;
-
-
-
-
-
-
-
-
-
-
-
         }
 
+        /// <summary>
+        /// Deletes a meditation from the database.
+        /// </summary>
+        /// <param name="meditation">The meditation entity to delete.</param>
+        /// <returns>A success message or failure message.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the specified meditation does not exist.</exception>
         public async Task<string> DeleteMeditationAsync(Meditation meditation)
         {
 
@@ -70,29 +68,49 @@ namespace GeneralCommittee.Infrastructure.Repositories
 
             try
             {
+                var Selected_Meditation = dbContext.Meditations
+                    .Where(m => m.MeditationId == meditation.MeditationId);
                 dbContext.Meditations.Remove(meditation);
                 dbContext.Database.CommitTransaction(); 
                 return "Success Process!";
             }
             catch
             {
-
                 dbContext.Database.RollbackTransaction();
-                return "failed Process!";
+                return "failed Process!";                
+                throw new ArgumentNullException(nameof(meditation), "Meditation You Determined NOT Exist!");
+
             }
 
 
 
 
         }
-
-        public async Task<(int, IEnumerable<Meditation>)> GetAllAsync(string? searchName, int pageNumber, int pageSize)
+        /// <summary>
+        /// Retrieves a paginated and sorted list of meditations based on search criteria. 
+        ///  </summary> 
+        /// <param name="searchName">The search term to filter meditations by title.</param>
+        /// <param name="pageNumber">The page number for pagination.</param> 
+        ///<param name="pageSize">The number of meditations per page.</param> 
+        ///<param name="sortBy">The field to sort the meditations by (e.g., "title", "date").</param> 
+        ///<returns>A tuple containing the total count of meditations and the list of meditations for the specified page.</returns>
+        public async Task<(int, IEnumerable<Meditation>)> GetAllMeditationsAsync(string? searchName, int pageNumber, int pageSize , string? sortBy)
         {
 
             searchName ??= string.Empty;
             searchName = searchName.ToLower();
             var baseQuery = dbContext.Meditations
                 .Where(r => r.Title.ToLower().Contains(searchName));
+
+            //TODO : Apply sorting
+            baseQuery = sortBy switch
+            {
+                "title" => baseQuery.OrderBy(r => r.Title),// Default sorting
+                "date" => baseQuery.OrderBy(r => r.CreatedDate),
+                _ => baseQuery.OrderBy(r => r.Title)
+            };
+
+
             var totalCount = await baseQuery.CountAsync();
             var Meditation = await baseQuery
                 .Skip(pageSize * (pageNumber - 1))
@@ -107,9 +125,14 @@ namespace GeneralCommittee.Infrastructure.Repositories
 
 
         }
+        /// <summary> 
+        /// Retrieves a meditation by its ID. 
+        /// </summary> /// <param name="meditationId">The ID of the meditation to retrieve.
+        /// </param> 
+        ///<returns>The meditation that matches the given ID.</returns> 
+        ///<exception cref="ResourceNotFound">Thrown when the meditation is not found.</exception>
 
-
-        public async Task<Meditation> GetById(int MeditationId)
+        public async Task<Meditation> GetMeditationsById(int MeditationId)
         {
 
             var Meditation = await dbContext.Meditations
@@ -120,77 +143,57 @@ namespace GeneralCommittee.Infrastructure.Repositories
                 throw new ResourceNotFound(nameof(Meditation), MeditationId.ToString());
             }
 
-            return  Meditation;
-
-
-
-
-
-
-
-
-
-        }
-
-        public async Task<bool> IsExist(int MeditationId)
-        {
-
-            return await dbContext.Meditations
-          .Where(a => a.MeditationId.Equals(MeditationId))
-          .FirstOrDefaultAsync() != null;
-
-
-
-
-
-
-
-
-
-
-        }
-
-        public async Task<bool> IsExistByContent(string content)
-        {
-
-            return await dbContext.Meditations
-           .Where(a => a.Content.Equals(content))
-           .FirstOrDefaultAsync() != null;
-
-        }
-
+            return  Meditation;}
+        /// <summary>
+        /// Checks if a meditation with the given title exists. 
+        /// </summary> /// <param name="title">The title of the meditation to check for existence.</param> 
+        /// <returns>True if a meditation with the given title exists, otherwise false.</returns>
         public async Task<bool> IsExistByTitle(string title)
         { return await dbContext.Meditations
            .Where(a => a.Title.Equals(title))
            .FirstOrDefaultAsync() != null; }
-
-        public async Task<bool> IsExistDuringUpdate(string Content, int Id)
+        /// <summary>
+        /// Updates an existing meditation.
+        /// </summary>
+        /// <param name="meditation">The meditation entity with updated information.</param>
+        /// <returns>A success message indicating the meditation has been updated.</returns>
+        /// <exception cref="ArgumentException">Thrown when the meditation entity is null.</exception>
+        /// <exception cref="DbUpdateException">Thrown when the update operation fails.</exception>
+        public async Task<string> UpdateMeditationAsync(Meditation meditation)
         {
-
-            var medition = await dbContext.Meditations
-           .Where(a => a.Content.Equals(Content))
-           .Where(a => a.MeditationId.Equals(Id))
-           .FirstOrDefaultAsync() != null;
-
-
-            if (medition != null)
+            // TODO: Validate the meditation parameter
+            if (meditation == null)
             {
-                throw new Exception("Another Medition has Same Data");
-
-                return false;
-
+                throw new ArgumentNullException(nameof(meditation), "Meditation must not be null.");
             }
-           
-            
-            return true;    
-            
-            
 
+            // TODO: Add logging to capture the start of the update operation
+            logger.LogInformation("Starting update operation for Meditation ID: {MeditationId}", meditation.MeditationId);
+
+            try
+            {
+                dbContext.Meditations.Update(meditation);
+                await dbContext.SaveChangesAsync(); // Ensure changes are saved to the database
+
+                // TODO: Log the successful update operation
+                logger.LogInformation("Meditation updated successfully with ID: {MeditationId}", meditation.MeditationId);
+                return "The Meditation has been updated successfully!";
+            }
+            catch (DbUpdateException ex)
+            {
+                // TODO: Log the exception details for debugging and monitoring
+                logger.LogError(ex, "An error occurred while updating the Meditation with ID: {MeditationId}", meditation.MeditationId);
+                throw new DbUpdateException("An error occurred while updating the meditation!", ex);
+            }
         }
 
-        public async Task<string> UpdateMeditationAsync(Meditation meditation)
-        { dbContext.Update(meditation);
-            return "The Article has been Updated Successfully!"; }
+
+
+        public async Task SaveChangesAsync()
+        {
+            await dbContext.SaveChangesAsync();
+        }
+
     }
 
 

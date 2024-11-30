@@ -1,6 +1,8 @@
 ﻿using GeneralCommittee.Application.Common;
 using GeneralCommittee.Domain.Constants;
 using GeneralCommittee.Domain.Exceptions;
+using Microsoft.AspNetCore.Http;
+using Microsoft.ApplicationInsights.Extensibility.Implementation;
 
 namespace GeneralCommittee.API.MiddleWares
 {
@@ -24,7 +26,7 @@ namespace GeneralCommittee.API.MiddleWares
             {
                 logger.LogError(ex, "Resource not found: {Message}", ex.Message);
                 context.Response.StatusCode = 404;
-                var ret = OperationResult<string>.Failure(ex.Message, statusCode: StatusCode.NotFound);
+                var ret = OperationResult<string>.Failure(ex.Message, statusCode: StateCode.NotFound);
                 context.Response.ContentType = "application/json";
                 await context.Response.WriteAsJsonAsync(ret);
             }
@@ -32,7 +34,7 @@ namespace GeneralCommittee.API.MiddleWares
             {
                 logger.LogError(ex, "Forbiden: {Message}", ex.Message);
                 context.Response.StatusCode = 401;
-                var ret = OperationResult<string>.Failure(ex.Message, statusCode: StatusCode.Forbidden);
+                var ret = OperationResult<string>.Failure(ex.Message, statusCode: StateCode.Forbidden);
                 context.Response.ContentType = "application/json";
                 await context.Response.WriteAsJsonAsync(ret);
             }

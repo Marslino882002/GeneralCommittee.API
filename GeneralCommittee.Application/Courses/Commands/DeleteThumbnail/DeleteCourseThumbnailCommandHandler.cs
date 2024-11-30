@@ -23,6 +23,7 @@ namespace GeneralCommittee.Application.Courses.Commands.DeleteThumbnail
             if (course.ThumbnailName is null)
             {
                 return;
+
             }
             var command = new DeleteFileCommand()
             {

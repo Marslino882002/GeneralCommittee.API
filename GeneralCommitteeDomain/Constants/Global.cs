@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace GeneralCommittee.Domain.Constants
 {
     public class Global
@@ -20,5 +21,7 @@ namespace GeneralCommittee.Domain.Constants
         public const string UserIdClaimType = "AdminId";
         public static string CourseThumbnailDirectory = "CoursesThumbnails";
         public static string ThumbnailFileExtension = ".jpeg";
+        public static string ArticlePhotoUrlDirectory = "ArticlesPhotos";
+        public static string PhotoUrlFileExtension = ".jpeg";
     }
 }

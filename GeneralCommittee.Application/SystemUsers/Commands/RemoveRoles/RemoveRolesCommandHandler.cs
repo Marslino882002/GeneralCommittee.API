@@ -29,7 +29,7 @@ namespace GeneralCommittee.Application.SystemUsers.Commands.RemoveRoles
             var adminTenant = userContext.GetCurrentUser()?.Tenant;
             if (string.IsNullOrEmpty(adminTenant))
             {
-                return OperationResult<string>.Failure("Unauthorized", StatusCode.Unauthorized);
+                return OperationResult<string>.Failure("Unauthorized", StateCode.Unauthorized);
             }
 
             var changedUserRoles = await systemUserRepository.GetUserRolesAsync(request.UserName, adminTenant);

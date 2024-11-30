@@ -76,7 +76,7 @@ namespace GeneralCommittee.Application.SystemUsers.Commands.ConfirmEmail
             if (string.IsNullOrEmpty(request.Tenant))
             {
                 logger.LogWarning("Invalid Tenant information provided for email confirmation.");
-                return OperationResult<string>.Failure("Bad Request", StatusCode.BadRequest);
+                return OperationResult<string>.Failure("Bad Request", StateCode.BadRequest);
             }
 
             // Retrieve user by email and tenant

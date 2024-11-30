@@ -79,7 +79,7 @@ namespace GeneralCommittee.Application.SystemUsers.Commands.ResetPassword
             if (string.IsNullOrEmpty(request.Tenant))
             {
                 logger.LogInformation("Invalid Tenant");
-                return OperationResult<string>.Failure("Bad Request", StatusCode.BadRequest);
+                return OperationResult<string>.Failure("Bad Request", StateCode.BadRequest);
             }
 
             // Retrieve the user by email

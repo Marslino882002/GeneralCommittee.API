@@ -35,7 +35,7 @@ namespace GeneralCommittee.Application.SystemUsers.Commands.Login
             if (string.IsNullOrEmpty(request.Tenant))
             {
                 logger.LogWarning("Invalid tenant information provided for login.");
-                return OperationResult<LoginDto>.Failure("Bad Request", StatusCode.BadRequest);
+                return OperationResult<LoginDto>.Failure("Bad Request", StateCode.BadRequest);
             }
 
             logger.LogInformation("Login request for user: {UserIdentifier}", request.UserIdentifier);
@@ -66,21 +66,21 @@ namespace GeneralCommittee.Application.SystemUsers.Commands.Login
             {
                 logger.LogWarning("User {UserIdentifier} belongs to tenant {Tenant1} but attempted to log in with tenant {Tenant2}.",
                     request.UserIdentifier, user.Tenant, request.Tenant);
-                return OperationResult<LoginDto>.Failure("Bad Request", StatusCode.BadRequest);
+                return OperationResult<LoginDto>.Failure("Bad Request", StateCode.BadRequest);
             }
 
             // Check if email is confirmed
             if (!await userManager.IsEmailConfirmedAsync(user))
             {
                 logger.LogWarning("User {Email} has not confirmed their email.", user.Email);
-                return OperationResult<LoginDto>.Failure("Bad Request", StatusCode.BadRequest);
+                return OperationResult<LoginDto>.Failure("Bad Request", StateCode.BadRequest);
             }
 
             // Validate password
             if (!await userManager.CheckPasswordAsync(user, request.Password))
             {
                 logger.LogWarning("Invalid password attempt for user {UserIdentifier}.", request.UserIdentifier);
-                return OperationResult<LoginDto>.Failure("Unauthorized", StatusCode.Unauthorized);
+                return OperationResult<LoginDto>.Failure("Unauthorized", StateCode.Unauthorized);
             }
 
             // Check for two-factor authentication

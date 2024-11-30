@@ -59,7 +59,7 @@ namespace GeneralCommittee.Application.AdminUsers.Commands.Add
     public class AddAdminCommandHandler(
     ILogger<AddAdminCommandHandler> logger,
     IAdminRepository adminRepository,
-    UserContext userContext) : IRequestHandler<AddAdminCommand>
+    IUserContext userContext) : IRequestHandler<AddAdminCommand>
     {
         [SuppressMessage("ReSharper.DPA", "DPA0006: Large number of DB commands", MessageId = "count: 27605")]
         public async Task Handle(AddAdminCommand request, CancellationToken cancellationToken)

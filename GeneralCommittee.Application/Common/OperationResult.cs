@@ -1,4 +1,5 @@
 ﻿using GeneralCommittee.Domain.Constants;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace GeneralCommittee.Application.Common
     {
 
         public bool Success { get; set; }
-        public StatusCode StatusCode { get; set; }
+        public StateCode StatusCode { get; set; }
         public string Message { get; set; } = string.Empty;
         public T? Data { get; set; } = default(T);
 
@@ -19,7 +20,7 @@ namespace GeneralCommittee.Application.Common
         public static OperationResult<T> SuccessResult(
             T data,
             string message = "",
-            StatusCode statusCode = StatusCode.Ok)
+            StateCode statusCode = StateCode.Ok)
         {
             return new OperationResult<T>
             {
@@ -30,7 +31,7 @@ namespace GeneralCommittee.Application.Common
             };
         }
 
-        public static OperationResult<T> Failure(string message, StatusCode statusCode = StatusCode.BadRequest)
+        public static OperationResult<T> Failure(string message, StateCode statusCode = StateCode.BadRequest)
         {
             return new OperationResult<T>
             {

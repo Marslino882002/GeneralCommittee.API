@@ -59,7 +59,7 @@ namespace GeneralCommittee.Application.SystemUsers.Commands.Refresh
             if (tokens == (null, null))
             {
                 logger.LogWarning("Failed to refresh token: {Token}", request.RefreshToken);
-                return OperationResult<RefreshResponse>.Failure("Invalid refresh token", StatusCode.Unauthorized);
+                return OperationResult<RefreshResponse>.Failure("Invalid refresh token", StateCode.Unauthorized);
             }
 
             // Create a response object with the new tokens
